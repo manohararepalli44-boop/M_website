@@ -5,6 +5,11 @@ app = Flask(__name__)
 
 # డేటాబేస్ మరియు టేబుల్స్ క్రియేట్ చేసే ఫంక్షన్
 def init_db():
+    # 🌟 పాత తప్పుడు డేటాబేస్ ఫైల్‌ను ఆటోమేటిక్‌గా రీసెట్ చేయడానికి ఈ 3 లైన్ల ట్రిక్ కలిపాను
+    import os
+    if os.path.exists('database.db'):
+        os.remove('database.db')
+        
     conn = sqlite3.connect('database.db')
     cursor = conn.cursor()
     
@@ -133,4 +138,4 @@ def send_message():
 
 if __name__ == '__main__':
     app.run(debug=True)
-        
+    
