@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="te">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M Website</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 60px; }
+        .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #262626; }
+        .logo { font-size: 20px; font-weight: bold; }
+        .profile-container { padding: 20px 15px; }
+        .profile-top { display: flex; align-items: center; gap: 25px; }
+        .profile-pic { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #262626; cursor: pointer; }
+        .stats { display: flex; gap: 20px; text-align: center; font-size: 14px; }
+        .stats span { font-weight: bold; display: block; font-size: 16px; }
+        .bio-section { margin-top: 15px; font-size: 14px; line-height: 1.5; }
+        .username { font-weight: bold; margin-bottom: 4px; }
+        .edit-btn { background: #1a1a1a; color: #fff; border: 1px solid #363636; padding: 6px 10px; border-radius: 5px; font-size: 12px; cursor: pointer; margin-top: 10px; }
+        .popup-form { background: #121212; border: 1px solid #262626; padding: 15px; border-radius: 10px; margin: 15px 0; display: none; }
+        .popup-form input { width: 90%; padding: 8px; margin: 5px 0; background: #1c1c1e; border: 1px solid #363636; color: #fff; border-radius: 5px; }
+        .popup-form button { background: #0095f6; color: #fff; border: none; padding: 8px 12px; border-radius: 5px; cursor: pointer; }
+        .posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; padding: 5px; }
+        .grid-img { width: 100%; aspect-ratio: 1/1; object-fit: cover; }
+        .nav-bar { position: fixed; bottom: 0; width: 100%; background: #000; border-top: 1px solid #262626; display: flex; justify-content: space-around; padding: 12px 0; }
+        .nav-bar a, .nav-bar i { color: #fff; font-size: 22px; text-decoration: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <div class="logo">M WEBSITE</div>
+        <!-- ఇన్‌స్టాగ్రామ్ లాంటి యాడ్ పోస్ట్ (+) సింబల్ -->
+        <i class="fas fa-plus-square" style="font-size: 22px; cursor: pointer;" onclick="toggleForm('post-form')"></i>
+    </div>
+
+    <!-- ప్లస్ సింబల్ నొక్కినప్పుడు ఓపెన్ అయ్యే న్యూ పోస్ట్ బాక్స్ -->
+    <div id="post-form" class="popup-form">
+        <h3>🆕 New Post</h3>
+        <form action="/post" method="POST">
+            <input type="url" name="image_url" placeholder="Paste Image URL here..." required>
+            <button type="submit">Post</button>
+        </form>
+    </div>
+
+    <div class="profile-container">
+        <div class="profile-top">
+            <!-- ప్రొఫైల్ ఇమేజ్ మీద నొక్కినా సెట్టింగ్స్ ఓపెన్ అవుతాయి -->
+            <img src="{{ profile_pic }}" class="profile-pic" alt="Profile" onclick="toggleForm('profile-form')">
+            <div class="stats">
+                <div><span>{{ posts|length }}</span> posts</div>
+                <div><span>{{ followers }}</span> followers</div>
+                <div><span>{{ following }}</span> following</div>
+            </div>
+        </div>
+
+        <div class="bio-section">
+            <div class="username">{{ name }}</div>
+            <div style="color: #a8a8a8;">{{ username }}</div>
+            <div>{{ bio }}</div>
+            <button class="edit-btn" onclick="toggleForm('profile-form')">⚙️ Edit Profile / Counts</button>
+        </div>
+
+        <!-- ప్రొఫైల్ ఇమేజ్ మార్చుకోవడానికి మరియు ఫాలోవర్స్ కౌంట్ సెట్ చేయడానికి బాక్స్ -->
+        <div id="profile-form" class="popup-form">
+            <h3>⚙️ Edit Settings</h3>
+            <form action="/update_profile" method="POST">
+                <input type="url" name="profile_pic" placeholder="New Profile Image URL...">
+                <input type="number" name="followers" placeholder="Change Followers Count...">
+                <input type="number" name="following" placeholder="Change Following Count...">
+                <button type="submit">Save Changes</button>
+            </form>
+        </div>
+    </div>
+
+    <hr style="border: 0; border-top: 1px solid #262626; margin: 0;">
+
+    <!-- మనం అప్‌లోడ్ చేసిన ఇమేజెస్ గ్రిడ్ -->
+    <div class="posts-grid">
+        {% for post in posts %}
+            <img src="{{ post }}" class="grid-img">
+        {% endfor %}
+    </div>
+
+    <!-- బాటమ్ నావిగేషన్ బార్ (ఇన్‌స్టాగ్రామ్ మెసెంజర్ ఐకాన్‌తో) -->
+    <div class="nav-bar">
+        <a href="/"><i class="fas fa-home"></i></a>
+        <i class="fas fa-search"></i>
+        <i class="fas fa-plus-square" onclick="toggleForm('post-form')"></i>
+        <a href="/messages"><i class="fab fa-instagram-messenger"></i></a>
+    </div>
+
+    <script>
+        function toggleForm(id) {
+            var form = document.getElementById(id);
+            form.style.display = (form.style.display === 'block') ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>
+
+
