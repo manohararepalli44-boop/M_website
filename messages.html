@@ -2,51 +2,30 @@
 <html lang="te">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>M Messenger</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Messenger Chat</title>
     <style>
-        body { background-color: #000; color: #fff; font-family: sans-serif; margin: 0; padding-bottom: 70px; }
-        .chat-header { padding: 15px; border-bottom: 1px solid #262626; display: flex; align-items: center; gap: 15px; }
-        .chat-header a { color: #fff; text-decoration: none; font-size: 20px; }
-        .chat-box { padding: 15px; display: flex; flex-direction: column; gap: 10px; max-height: 78vh; overflow-y: auto; }
-        .msg { padding: 10px 14px; border-radius: 20px; max-width: 70%; word-wrap: break-word; font-size: 15px; display: flex; flex-direction: column; }
-        .msg.me { background: #3797f0; align-self: flex-end; color: #fff; border-bottom-right-radius: 2px; }
-        .msg.friend { background: #262626; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .sender-name { font-size: 11px; color: #e1e1e1; margin-bottom: 4px; font-weight: bold; }
-        .input-area { position: fixed; bottom: 0; width: 100%; background: #000; padding: 10px; border-top: 1px solid #262626; box-sizing: border-box; }
-        .input-area form { display: flex; gap: 8px; align-items: center; }
-        .input-area input[type="text"] { flex: 1; padding: 10px 15px; background: #1c1c1e; border: 1px solid #363636; color: #fff; border-radius: 25px; }
-        .input-area select { background: #1c1c1e; color: #fff; border: 1px solid #363636; border-radius: 20px; padding: 8px 10px; font-size: 13px; }
-        .input-area button { background: none; border: none; color: #0095f6; font-weight: bold; font-size: 16px; cursor: pointer; padding: 0 10px; }
+        body { font-family: Arial, sans-serif; background-color: #fafafa; text-align: center; padding: 50px; }
+        .chat-box { background: white; border: 1px solid #dbdbdb; padding: 20px; display: inline-block; width: 300px; text-align: left; border-radius: 8px; }
     </style>
 </head>
 <body>
-
-    <div class="chat-header">
-        <a href="/"><i class="fas fa-arrow-left"></i></a>
-        <h2 style="margin: 0; font-size: 20px;">Chats 💬</h2>
-    </div>
-
     <div class="chat-box">
-        {% for msg in messages %}
-            <div class="msg {% if msg[0] == 'Manohar' %}me{% else %}friend{% endif %}">
-                <span class="sender-name">{{ msg[0] }}</span>
-                {{ msg[1] }}
-            </div>
-        {% endfor %}
-    </div>
-
-    <div class="input-area">
+        <h3>💬 Messenger Chat</h3>
+        <a href="/"><- వెనక్కి వెళ్ళు</a>
+        <hr>
+        <div style="height: 200px; overflow-y: auto;">
+            {% if messages %}
+                {% for msg in messages %}
+                    <p><b>{{ msg[0] }}:</b> {{ msg[1] }}</p>
+                {% endfor %}
+            {% else %}
+                <p>ఇంకా చాట్ మెసేజ్‌లు లేవు...</p>
+            {% endif %}
+        </div>
         <form action="/send_message" method="POST">
-            <select name="sender">
-                <option value="Manohar">Manohar</option>
-                <option value="Friend">Friend</option>
-            </select>
-            <input type="text" name="message_text" placeholder="Message..." required autocomplete="off">
+            <input type="text" name="message_text" placeholder="మెసేజ్ టైప్ చెయ్..." required>
             <button type="submit">Send</button>
         </form>
     </div>
-
 </body>
 </html>
