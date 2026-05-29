@@ -5,17 +5,13 @@ app = Flask(__name__)
 
 # డేటాబేస్ మరియు టేబుల్స్ క్రియేట్ చేసే ఫ్రెష్ ఫంక్షన్
 def init_db():
-    conn = sqlite3.connect('database.db')
+    # 🌟 పాత ఎర్రర్ ఫైల్ జోలికి వెళ్లకుండా 'instagram.db' అని సరికొత్త పేరు పెట్టాను
+    conn = sqlite3.connect('instagram.db')
     cursor = conn.cursor()
-    
-    # 🌟 ఫైల్ డిలీట్ చేయకుండా, పాత టేబుల్స్ ఉంటే వాటిని క్లీన్ చేయడానికి కరెక్ట్ పద్ధతి
-    cursor.execute('DROP TABLE IF EXISTS profile')
-    cursor.execute('DROP TABLE IF EXISTS messages')
-    cursor.execute('DROP TABLE IF EXISTS posts')
     
     # 1. ప్రొఫైల్ కౌంట్స్ (Posts, Followers, Following) టేబుల్
     cursor.execute('''
-        CREATE TABLE profile (
+        CREATE TABLE IF NOT EXISTS profile (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             posts_count TEXT,
             followers_count TEXT,
@@ -25,7 +21,7 @@ def init_db():
     
     # 2. మెసెంజర్ చాట్ మెసేజ్ల టేబుల్
     cursor.execute('''
-        CREATE TABLE messages (
+        CREATE TABLE IF NOT EXISTS messages (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             sender TEXT,
             message_text TEXT,
@@ -35,25 +31,27 @@ def init_db():
     
     # 3. పోస్ట్‌ల టేబుల్
     cursor.execute('''
-        CREATE TABLE posts (
+        CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             image_url TEXT
         )
     ''')
     
     # డీఫాల్ట్ ప్రొఫైల్ వాల్యూస్ ఇన్సర్ట్ చేయడం
-    cursor.execute("INSERT INTO profile (posts_count, followers_count, following_count) VALUES ('0', '150', '180')")
+    cursor.execute('SELECT COUNT(*) FROM profile')
+    if cursor.fetchone()[0] == 0:
+        cursor.execute("INSERT INTO profile (posts_count, followers_count, following_count) VALUES ('0', '150', '180')")
         
     conn.commit()
     conn.close()
 
-# యాప్ స్టార్ట్ అయ్యేటప్పుడు డేటాబేస్ టేబుల్స్ ఫ్రెష్‌గా క్రియేట్ అవుతాయి
+# యాప్ స్టార్ట్ అయ్యేటప్పుడు డేటాబేస్ ఫ్రెష్‌గా రన్ అవుతుంది
 init_db()
 
 # 1. హోమ్ పేజీ (ఇన్‌స్టాగ్రామ్ ఫీడ్)
 @app.route('/')
 def home():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('instagram.db')
     cursor = conn.cursor()
     
     cursor.execute('SELECT posts_count, followers_count, following_count FROM profile WHERE id = 1')
@@ -72,7 +70,7 @@ def update_profile():
     followers = request.form.get('followers')
     following = request.form.get('following')
     
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('instagram.db')
     cursor = conn.cursor()
     cursor.execute('''
         UPDATE profile 
@@ -89,7 +87,7 @@ def update_profile():
 def add_post():
     image_url = request.form.get('image_url')
     if image_url:
-        conn = sqlite3.connect('database.db')
+        conn = sqlite3.connect('instagram.db')
         cursor = conn.cursor()
         cursor.execute('INSERT INTO posts (image_url) VALUES (?)', (image_url,))
         
@@ -106,7 +104,7 @@ def add_post():
 # 4. మెసెంజర్ చాట్ పేజీ
 @app.route('/messenger')
 def messenger():
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('instagram.db')
     cursor = conn.cursor()
     cursor.execute('SELECT sender, message_text FROM messages ORDER BY timestamp ASC')
     chat_messages = cursor.fetchall()
@@ -121,7 +119,7 @@ def send_message():
     message_text = request.form.get('message_text')
     
     if message_text:
-        conn = sqlite3.connect('database.db')
+        conn = sqlite3.connect('instagram.db')
         cursor = conn.cursor()
         cursor.execute('INSERT INTO messages (sender, message_text) VALUES (?, ?)', (sender, message_text))
         conn.commit()
@@ -131,4 +129,3 @@ def send_message():
 
 if __name__ == '__main__':
     app.run(debug=True)
-    
